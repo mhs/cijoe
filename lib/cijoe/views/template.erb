@@ -43,6 +43,19 @@
               <li><pre class="terminal"><code><%=ansi_color_codes h(joe.last_build.output) %></code></pre></li>
             <% end %>
           <% end %>
+
+          <% joe.previous_builds.each do |build| %>
+            <li>
+              <span class="date"><%= pretty_time(build.finished_at) %></span> &raquo;
+              <% if build.sha %>
+                Built <a href="<%= build.commit.url %>"><%= build.short_sha %></a>
+              <% end %>
+              <span class="<%= build.status %>">(<%= build.status %>)</span>
+            </li>
+            <% if build.failed? %>
+              <li><pre class="terminal"><code><%=ansi_color_codes h(build.output) %></code></pre></li>
+            <% end %>
+          <% end %>
         </ul>
       </div>
 

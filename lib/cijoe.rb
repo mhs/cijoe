@@ -77,6 +77,7 @@ class CIJoe
     @current_build = nil
     write_build 'current', @current_build
     write_build 'last', @last_build
+    `cd #{@project_path} && git notes append #{git_sha} -m "CIJoe: #{status}"`
     @last_build.notify if @last_build.respond_to? :notify
 
     # another build waits
@@ -226,5 +227,11 @@ class CIJoe
   # load build info from file.
   def read_build(name)
     Build.load(path_in_project(".git/builds/#{name}"), @project_path)
+  end
+
+  def previous_builds
+    `cd #{@project_path} && git notes list`.lines.map{|l| l.split(' ')}.map{|c| {:status =>`git show #{c[0]}`.scan(/CIJoe: (.*)/).flatten.first , :sha => c[1] } }.select{|a| a[:status]}.map.reverse do |build|
+      Build.new(@project_path, @user, @project, Time.now, Time.now, build[:sha], build[:status])
+    end
   end
 end
