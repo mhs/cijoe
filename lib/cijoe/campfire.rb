@@ -41,7 +41,7 @@ class CIJoe
     end
 
     def notify
-      room.speak "#{short_message}. #{commit.url}"
+      room.speak "#{short_message}"
       room.paste full_message if failed?
       room.leave
     end
